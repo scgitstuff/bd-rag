@@ -1,4 +1,5 @@
 import argparse
+from lib.keyword_search import searchKeyWord
 
 
 def main() -> None:
@@ -13,7 +14,9 @@ def main() -> None:
     match args.command:
         case "search":
             print(f"Searching for: {args.query}")
-            pass
+            found = searchKeyWord(args.query)
+            for i, movie in enumerate(found, 1):
+                print(f"{i}. {movie['title']}")
         case _:
             parser.print_help()
 
