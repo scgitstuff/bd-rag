@@ -1,3 +1,4 @@
+import string
 from .search_utils import loadMovies  # type: ignore
 
 
@@ -22,5 +23,6 @@ def searchKeyWord(
 
 def preprocess(s: str) -> str:
     s = s.lower()
+    s = s.translate(str.maketrans("", "", string.punctuation))
 
     return s
