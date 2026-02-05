@@ -12,9 +12,15 @@ def searchKeyWord(
 
     matches: list[dict[str, str]] = []
     for movie in movies:
-        if search in movie["title"]:
+        if preprocess(search) in preprocess(movie["title"]):
             matches.append(movie)
             if len(matches) >= limit:
                 break
 
     return matches
+
+
+def preprocess(s: str) -> str:
+    s = s.lower()
+
+    return s
