@@ -1,6 +1,12 @@
 import string
 from .search_utils import loadMovies, loadStopWords
 
+# Pylance has problems with this import
+# it wants to generate typings, but they add a "porter" module that doesn't seem to exist
+# from nltk.stem.porter import PorterStemmer
+# both work, so I'm just following the documentation, Pylance can eat all the dicks
+from nltk.stem import PorterStemmer  # type: ignore
+
 
 DEFAULT_SEARCH_LIMIT = 5
 
@@ -9,15 +15,13 @@ def searchKeyWord(
     search: str, limit: int = DEFAULT_SEARCH_LIMIT
 ) -> list[dict[str, str]]:
 
-    t = (2, 2, 3)
-    _ = t
-
     movies = loadMovies()
     stopWords = loadStopWords()
 
     search = preprocess(search)
     searchWords = tokenize(search)
     searchWords = removeStopWords(searchWords, stopWords)
+    searchWords = stemWords(searchWords)
 
     matches: list[dict[str, str]] = []
     for movie in movies:
@@ -60,5 +64,19 @@ def removeStopWords(words: set[str], stopWords: list[str]) -> set[str]:
     for word in words:
         if word not in stopWords:
             out.add(word)
+
+    return out
+
+
+def stemWords(words: set[str]) -> set[str]:
+    out: set[str] = set()
+    stemmer = PorterStemmer()
+
+    out = set(
+        map(
+            lambda word: stemmer.stem(word),  # type: ignore
+            words,
+        )
+    )
 
     return out
