@@ -15,11 +15,11 @@ def searchKeyWord(
     stopWords = loadStopWords()
     searchWords = cleanWords(search, stopWords)
 
-    # I want a full set matches on all words
+    # I want a full set of matches on all words
     # this will be useful for weights later
-    docIDs: list[int] = []
+    docIDs: set[int] = set()
     for word in searchWords:
-        docIDs += movieIndex.getDocs(word)
+        docIDs.update(movieIndex.getDocs(word))
     uniqueIDs = sorted(set(docIDs))
 
     for id in uniqueIDs:
