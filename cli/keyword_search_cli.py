@@ -1,5 +1,6 @@
 import argparse
-from lib.keyword_search import searchKeyWord, buildIndex
+from lib.keyword_search import buildIndex, searchKeyWord
+from lib.index import InvertedIndex
 
 
 def main() -> None:
@@ -24,19 +25,22 @@ def main() -> None:
 
 def searchCommand(query: str):
     print(f"Searching for: {query}")
-    found = searchKeyWord(query)
-    for i, movie in enumerate(found, 1):
-        print(f"{i}. {movie['title']}")
+
+    movieIndex = InvertedIndex()
+    try:
+        movieIndex.load()
+    except Exception as e:
+        print(e)
+        return
+
+    movies = searchKeyWord(movieIndex, query)
+    for i, movie in enumerate(movies, 1):
+        print(f"{i}. {movie['id']} {movie['title']}")
 
 
 def buildCommand():
-
     print("Building inverted index...")
-
-    movieIndex = buildIndex()
-    docs = movieIndex.getDocs("merida")
-    print(f"First document for token 'merida' = {docs[0]}")
-
+    buildIndex()
     print("Inverted index built successfully.")
 
 

@@ -1,4 +1,4 @@
-from .search_utils import loadMovies, loadStopWords, cleanWords, stemWords
+from .search_utils import cleanWords, loadStopWords
 from .index import InvertedIndex
 
 
@@ -6,41 +6,35 @@ DEFAULT_SEARCH_LIMIT = 5
 
 
 def searchKeyWord(
+    movieIndex: InvertedIndex,
     search: str,
     limit: int = DEFAULT_SEARCH_LIMIT,
 ) -> list[dict[str, str]]:
 
-    movies = loadMovies()
-    stopWords = loadStopWords()
-
-    searchWords = cleanWords(search, stopWords)
-    searchWords = stemWords(searchWords)
-
     matches: list[dict[str, str]] = []
-    for movie in movies:
-        title = " ".join(cleanWords(movie["title"]))
+    stopWords = loadStopWords()
+    searchWords = cleanWords(search, stopWords)
 
-        if _hasToken(title, searchWords):
-            matches.append(movie)
-            if len(matches) >= limit:
-                break
+    # I want a full set matches on all words
+    # this will be useful for weights later
+    docIDs: list[int] = []
+    for word in searchWords:
+        docIDs += movieIndex.getDocs(word)
+    uniqueIDs = sorted(set(docIDs))
+
+    for id in uniqueIDs:
+        movie = movieIndex.docmap[id]
+        matches.append(movie)
+
+        if len(matches) == limit:
+            break
 
     return matches
 
 
-def _hasToken(title: str, words: set[str]) -> bool:
-    for word in words:
-        if word in title:
-            return True
-
-    return False
-
-
 def buildIndex() -> InvertedIndex:
-    movies = loadMovies()
-
     movieIndex = InvertedIndex()
-    movieIndex.build(movies)
+    movieIndex.build()
     movieIndex.save()
 
     return movieIndex

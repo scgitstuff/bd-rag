@@ -19,33 +19,28 @@ def loadMovies() -> list[dict[str, str]]:
     return data["movies"]
 
 
-def loadStopWords() -> list[str]:
+def loadStopWords() -> frozenset[str]:
     with open(STOP_FILE, "r") as f:
-        return f.read().splitlines()
+        lines = f.read().splitlines()
+
+    return frozenset(lines)
 
 
-def cleanWords(text: str, stopWords: list[str] | None = None) -> set[str]:
-    if stopWords is None:
-        stopWords = []
-
+def cleanWords(text: str, stopWords: frozenset[str]) -> set[str]:
     text = _preprocess(text)
     words = _tokenize(text)
-    if len(stopWords) > 0:
-        words = _removeStopWords(words, stopWords)
+    words = _removeStopWords(words, stopWords)
+    words = _stemWords(words)
 
     return words
 
 
-def stemWords(words: set[str]) -> set[str]:
+def _stemWords(words: set[str]) -> set[str]:
     out: set[str] = set()
     stemmer = PorterStemmer()
 
-    out = set(
-        map(
-            lambda word: stemmer.stem(word),  # type: ignore
-            words,
-        )
-    )
+    for word in words:
+        out.add(stemmer.stem(word))  # type: ignore
 
     return out
 
@@ -58,14 +53,14 @@ def _preprocess(s: str) -> str:
 
 
 def _tokenize(s: str) -> set[str]:
-    words = s.split(" ")
+    words = s.split()
     words = set(words)
     words.discard("")
 
     return words
 
 
-def _removeStopWords(words: set[str], stopWords: list[str]) -> set[str]:
+def _removeStopWords(words: set[str], stopWords: frozenset[str]) -> set[str]:
     out: set[str] = set()
 
     for word in words:
