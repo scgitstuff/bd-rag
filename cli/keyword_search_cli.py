@@ -1,16 +1,21 @@
 import argparse
-from lib.keyword_search import buildIndex, searchKeyWord
+from lib.keyword_search import searchKeyWord
 from lib.index import InvertedIndex
+from lib.search_utils import loadStopWords
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Keyword Search CLI")
-    subparsers = parser.add_subparsers(dest="command", help="Available commands")
+    subParsers = parser.add_subparsers(dest="command", help="Available commands")
 
-    search_parser = subparsers.add_parser("search", help="Search movies using BM25")
-    search_parser.add_argument("query", type=str, help="Search query")
+    searchParser = subParsers.add_parser("search", help="Search movies using BM25")
+    searchParser.add_argument("query", type=str, help="Search query")
 
-    subparsers.add_parser("build", help="build the index")
+    subParsers.add_parser("build", help="build the index")
+
+    tfParser = subParsers.add_parser("tf", help="check count for word in doc")
+    tfParser.add_argument("docID", type=int, help="doc ID")
+    tfParser.add_argument("token", type=str, help="word to get count for")
 
     args = parser.parse_args()
 
@@ -19,6 +24,8 @@ def main() -> None:
             buildCommand()
         case "search":
             searchCommand(args.query)
+        case "tf":
+            tfCommand(args.docID, args.token)
         case _:
             parser.print_help()
 
@@ -26,7 +33,7 @@ def main() -> None:
 def searchCommand(query: str):
     print(f"Searching for: {query}")
 
-    movieIndex = InvertedIndex()
+    movieIndex = InvertedIndex(loadStopWords())
     try:
         movieIndex.load()
     except Exception as e:
@@ -40,8 +47,24 @@ def searchCommand(query: str):
 
 def buildCommand():
     print("Building inverted index...")
-    buildIndex()
+
+    movieIndex = InvertedIndex(loadStopWords())
+    movieIndex.build()
+    movieIndex.save()
+
     print("Inverted index built successfully.")
+
+
+def tfCommand(id: int, token: str):
+    movieIndex = InvertedIndex(loadStopWords())
+    try:
+        movieIndex.load()
+    except Exception as e:
+        print(e)
+        return
+
+    count = movieIndex.getTF(id, token)
+    print(f"'{token}' count in document '{id}' is {count}")
 
 
 if __name__ == "__main__":

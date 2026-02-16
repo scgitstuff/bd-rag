@@ -26,45 +26,22 @@ def loadStopWords() -> frozenset[str]:
     return frozenset(lines)
 
 
-def cleanWords(text: str, stopWords: frozenset[str]) -> set[str]:
-    text = _preprocess(text)
-    words = _tokenize(text)
-    words = _removeStopWords(words, stopWords)
-    words = _stemWords(words)
-
-    return words
-
-
-def _stemWords(words: set[str]) -> set[str]:
-    out: set[str] = set()
+# originally I used set()
+# that broke Term Frequency, so List it is
+def cleanWords(text: str, stopWords: frozenset[str]) -> list[str]:
+    out: list[str] = []
     stemmer = PorterStemmer()
 
-    for word in words:
-        out.add(stemmer.stem(word))  # type: ignore
+    # preprocess
+    text = text.lower()
+    text = text.translate(str.maketrans("", "", string.punctuation))
 
-    return out
-
-
-def _preprocess(s: str) -> str:
-    s = s.lower()
-    s = s.translate(str.maketrans("", "", string.punctuation))
-
-    return s
-
-
-def _tokenize(s: str) -> set[str]:
-    words = s.split()
-    words = set(words)
-    words.discard("")
-
-    return words
-
-
-def _removeStopWords(words: set[str], stopWords: frozenset[str]) -> set[str]:
-    out: set[str] = set()
+    # tokenize
+    words = text.split()
 
     for word in words:
-        if word not in stopWords:
-            out.add(word)
+        # filter out empty and stop words
+        if word and word not in stopWords:
+            out.append(stemmer.stem(word))  # type: ignore
 
     return out

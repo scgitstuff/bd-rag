@@ -1,4 +1,4 @@
-from .search_utils import cleanWords, loadStopWords
+from .search_utils import cleanWords
 from .index import InvertedIndex
 
 
@@ -12,29 +12,20 @@ def searchKeyWord(
 ) -> list[dict[str, str]]:
 
     matches: list[dict[str, str]] = []
-    stopWords = loadStopWords()
-    searchWords = cleanWords(search, stopWords)
+    seen: set[int] = set()
+    searchWords = set(cleanWords(search, movieIndex.stopWords))
 
-    # I want a full set of matches on all words
-    # this will be useful for weights later
-    docIDs: set[int] = set()
     for word in searchWords:
-        docIDs.update(movieIndex.getDocs(word))
-    uniqueIDs = sorted(set(docIDs))
+        docIDs = movieIndex.getDocs(word)
+        for id in docIDs:
+            if id in seen:
+                continue
+            seen.add(id)
 
-    for id in uniqueIDs:
-        movie = movieIndex.docmap[id]
-        matches.append(movie)
+            movie = movieIndex.docmap[id]
+            matches.append(movie)
 
-        if len(matches) == limit:
-            break
+            if len(matches) == limit:
+                return matches
 
     return matches
-
-
-def buildIndex() -> InvertedIndex:
-    movieIndex = InvertedIndex()
-    movieIndex.build()
-    movieIndex.save()
-
-    return movieIndex
