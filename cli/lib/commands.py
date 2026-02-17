@@ -1,0 +1,54 @@
+from lib.keyword_search import searchKeyWord
+from lib.index import InvertedIndex
+from lib.search_utils import loadStopWords
+
+
+def buildCommand():
+    print("Building inverted index...")
+
+    movieIndex = InvertedIndex(loadStopWords())
+    movieIndex.build()
+    movieIndex.save()
+
+    print("Inverted index built successfully.")
+
+
+def idfCommand(token: str):
+    movieIndex = _loadIndex()
+    if movieIndex is None:
+        return
+
+    freq = movieIndex.getIDF(token)
+    print(f"Inverse document frequency of '{token}': {freq:.2f}")
+
+
+def searchCommand(query: str):
+    print(f"Searching for: {query}")
+
+    movieIndex = _loadIndex()
+    if movieIndex is None:
+        return
+
+    movies = searchKeyWord(movieIndex, query)
+    for i, movie in enumerate(movies, 1):
+        print(f"{i}. {movie['id']} {movie['title']}")
+
+
+def tfCommand(id: int, token: str):
+    movieIndex = _loadIndex()
+    if movieIndex is None:
+        return
+
+    count = movieIndex.getTF(id, token)
+    print(f"'{token}' count in document '{id}' is {count}")
+
+
+def _loadIndex() -> InvertedIndex | None:
+    movieIndex = InvertedIndex(loadStopWords())
+    try:
+        movieIndex.load()
+    except Exception as e:
+        print(e)
+        return None
+
+    return movieIndex

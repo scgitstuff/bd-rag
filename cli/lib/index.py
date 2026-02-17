@@ -1,4 +1,5 @@
 from collections import Counter, defaultdict
+import math
 from pathlib import Path
 from pickle import dump, load
 from .search_utils import cleanWords, loadMovies
@@ -29,17 +30,27 @@ class InvertedIndex:
         out = self.index.get(term, set())
         return sorted(list(out))
 
+    def getIDF(self, term: str) -> float:
+        # I used set to alow for duplicate stems
+        stuff = set(cleanWords(term, self.stopWords))
+        if len(stuff) != 1:
+            raise Exception("there can be only one! token")
+        term = stuff.pop()
+
+        docCount = len(self.docmap)
+        termDocCount = len(self.getDocs(term))
+        # print(f"math.log(({docCount} + 1) / ({termDocCount} + 1))")
+
+        return math.log((docCount + 1) / (termDocCount + 1))
+
     def getTF(self, docID: int, term: str) -> int:
         # I used set to alow for duplicate stems
         stuff = set(cleanWords(term, self.stopWords))
         if len(stuff) != 1:
             raise Exception("there can be only one! token")
+        term = stuff.pop()
 
-        # should we tell user what the stem is?
-        s = stuff.pop()
-        # print(f"{term} -> {s}")
-
-        return self.termFrequency[docID][s]
+        return self.termFrequency[docID][term]
 
     def build(self):
         movies = loadMovies()
