@@ -52,6 +52,12 @@ class InvertedIndex:
 
         return self.termFrequency[docID][term]
 
+    def getTF_IDF(self, docID: int, term: str) -> float:
+        tf = self.getTF(docID, term)
+        idf = self.getIDF(term)
+
+        return tf * idf
+
     def build(self):
         movies = loadMovies()
 

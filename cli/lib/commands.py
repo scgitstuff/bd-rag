@@ -43,6 +43,15 @@ def tfCommand(id: int, token: str):
     print(f"'{token}' count in document '{id}' is {count}")
 
 
+def tfidfCommand(id: int, token: str):
+    movieIndex = _loadIndex()
+    if movieIndex is None:
+        return
+
+    tfidf = movieIndex.getTF_IDF(id, token)
+    print(f"TF-IDF score of '{token}' in document '{id}': {tfidf:.2f}")
+
+
 def _loadIndex() -> InvertedIndex | None:
     movieIndex = InvertedIndex(loadStopWords())
     try:

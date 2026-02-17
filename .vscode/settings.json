@@ -2,6 +2,7 @@
     "cSpell.words": [
         "docmap",
         "nltk",
-        "stopwords"
+        "stopwords",
+        "tfidf"
     ]
 }
