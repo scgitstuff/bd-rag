@@ -31,12 +31,7 @@ class InvertedIndex:
         return sorted(list(out))
 
     def getIDF(self, term: str) -> float:
-        # I used set to alow for duplicate stems
-        stuff = set(cleanWords(term, self.stopWords))
-        if len(stuff) != 1:
-            raise Exception("there can be only one! token")
-        term = stuff.pop()
-
+        term = self._getSingleToken(term)
         docCount = len(self.docmap)
         termDocCount = len(self.getDocs(term))
         # print(f"math.log(({docCount} + 1) / ({termDocCount} + 1))")
@@ -44,11 +39,7 @@ class InvertedIndex:
         return math.log((docCount + 1) / (termDocCount + 1))
 
     def getTF(self, docID: int, term: str) -> int:
-        # I used set to alow for duplicate stems
-        stuff = set(cleanWords(term, self.stopWords))
-        if len(stuff) != 1:
-            raise Exception("there can be only one! token")
-        term = stuff.pop()
+        term = self._getSingleToken(term)
 
         return self.termFrequency[docID][term]
 
@@ -57,6 +48,14 @@ class InvertedIndex:
         idf = self.getIDF(term)
 
         return tf * idf
+
+    def getBM25IDF(self, term: str) -> float:
+        term = self._getSingleToken(term)
+        docCount = len(self.docmap)
+        termDocCount = len(self.getDocs(term))
+        idfBM25 = math.log((docCount - termDocCount + 0.5) / (termDocCount + 0.5) + 1)
+
+        return idfBM25
 
     def build(self):
         movies = loadMovies()
@@ -108,3 +107,12 @@ class InvertedIndex:
 
         with open(freqFile, "rb") as f:
             self.termFrequency = load(f)
+
+    def _getSingleToken(self, term: str) -> str:
+        # I used set to alow for duplicate stems
+        stuff = set(cleanWords(term, self.stopWords))
+        if len(stuff) != 1:
+            raise ValueError("term must be a single token")
+        term = stuff.pop()
+
+        return term

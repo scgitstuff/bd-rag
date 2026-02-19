@@ -3,6 +3,15 @@ from lib.index import InvertedIndex
 from lib.search_utils import loadStopWords
 
 
+def bm25idfCommand(token: str):
+    movieIndex = _loadIndex()
+    if movieIndex is None:
+        return
+
+    bm25idf = movieIndex.getBM25IDF(token)
+    print(f"BM25 IDF score of '{token}': {bm25idf:.2f}")
+
+
 def buildCommand():
     print("Building inverted index...")
 

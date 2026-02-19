@@ -6,6 +6,11 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Keyword Search CLI")
     subParsers = parser.add_subparsers(dest="command", help="Available commands")
 
+    bm25idfParser = subParsers.add_parser(
+        "bm25idf", help="Get BM25 IDF score for a given term"
+    )
+    bm25idfParser.add_argument("term", type=str, help="Term to get BM25 IDF score for")
+
     subParsers.add_parser("build", help="Build the inverted index")
 
     idfParser = subParsers.add_parser(
@@ -31,6 +36,8 @@ def main() -> None:
     args = parser.parse_args()
 
     match args.command:
+        case "bm25idf":
+            cmds.bm25idfCommand(args.term)
         case "build":
             cmds.buildCommand()
         case "idf":
