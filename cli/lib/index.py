@@ -3,6 +3,7 @@ import math
 from pathlib import Path
 from pickle import dump, load
 from .search_utils import cleanWords, loadMovies
+import lib.constants as const
 
 
 CACHE_DIR = "cache/"
@@ -56,6 +57,12 @@ class InvertedIndex:
         idfBM25 = math.log((docCount - termDocCount + 0.5) / (termDocCount + 0.5) + 1)
 
         return idfBM25
+
+    def getBM25TF(self, docID: int, term: str, k1: float = const.BM25_K1) -> float:
+        tf = self.getTF(docID, term)
+        saturation = (tf * (k1 + 1)) / (tf + k1)
+
+        return saturation
 
     def build(self):
         movies = loadMovies()

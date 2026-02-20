@@ -1,5 +1,6 @@
 import argparse
 import lib.commands as cmds
+import lib.constants as const
 
 
 def main() -> None:
@@ -10,6 +11,19 @@ def main() -> None:
         "bm25idf", help="Get BM25 IDF score for a given term"
     )
     bm25idfParser.add_argument("term", type=str, help="Term to get BM25 IDF score for")
+
+    bm25tfParser = subParsers.add_parser(
+        "bm25tf", help="Get BM25 TF score for a given document ID and term"
+    )
+    bm25tfParser.add_argument("docID", type=int, help="Document ID")
+    bm25tfParser.add_argument("term", type=str, help="Term to get BM25 TF score for")
+    bm25tfParser.add_argument(
+        "k1",
+        type=float,
+        nargs="?",
+        default=const.BM25_K1,
+        help="Tunable BM25 K1 parameter",
+    )
 
     subParsers.add_parser("build", help="Build the inverted index")
 
@@ -38,6 +52,8 @@ def main() -> None:
     match args.command:
         case "bm25idf":
             cmds.bm25idfCommand(args.term)
+        case "bm25tf":
+            cmds.bm25tfCommand(args.docID, args.term, args.k1)
         case "build":
             cmds.buildCommand()
         case "idf":
