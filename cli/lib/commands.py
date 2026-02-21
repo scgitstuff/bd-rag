@@ -1,6 +1,6 @@
-from lib.keyword_search import searchKeyWord, bm25Search
-from lib.index import InvertedIndex
-from lib.search_utils import loadStopWords
+from .search import searchKeyWord, bm25Search
+from .index import InvertedIndex
+from .search_utils import loadStopWords
 
 
 def bm25idfCommand(token: str):
