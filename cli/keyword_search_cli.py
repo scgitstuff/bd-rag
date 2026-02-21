@@ -39,6 +39,11 @@ def main() -> None:
     )
     idfParser.add_argument("term", type=str, help="Term to get IDF for")
 
+    bm25SearchParser = subParsers.add_parser(
+        "bm25search", help="Search movies using full BM25 scoring"
+    )
+    bm25SearchParser.add_argument("query", type=str, help="Search query")
+
     searchParser = subParsers.add_parser("search", help="Search movies using BM25")
     searchParser.add_argument("query", type=str, help="Search query")
 
@@ -65,6 +70,8 @@ def main() -> None:
             cmds.buildCommand()
         case "idf":
             cmds.idfCommand(args.term)
+        case "bm25search":
+            cmds.bm25searchCommand(args.query)
         case "search":
             cmds.searchCommand(args.query)
         case "tf":

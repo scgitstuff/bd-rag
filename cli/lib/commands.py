@@ -1,4 +1,4 @@
-from lib.keyword_search import searchKeyWord
+from lib.keyword_search import searchKeyWord, bm25Search
 from lib.index import InvertedIndex
 from lib.search_utils import loadStopWords
 
@@ -50,6 +50,18 @@ def searchCommand(query: str):
     movies = searchKeyWord(movieIndex, query)
     for i, movie in enumerate(movies, 1):
         print(f"{i}. {movie['id']} {movie['title']}")
+
+
+def bm25searchCommand(query: str):
+    print(f"Searching for: {query}")
+
+    movieIndex = _loadIndex()
+    if movieIndex is None:
+        return
+
+    movies = bm25Search(movieIndex, query)
+    for i, movie in enumerate(movies, 1):
+        print(f"{i}. ({movie['id']}) {movie['title']} - Score: {movie["bm25"]}")
 
 
 def tfCommand(id: int, token: str):

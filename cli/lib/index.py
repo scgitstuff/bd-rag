@@ -67,9 +67,15 @@ class InvertedIndex:
         normalizedLen = 1 - b + b * (self.docLengths[docID] / self.__avgDocLen())
 
         # Apply normalize to term frequency
-        saturation = (tf * (k1 + 1)) / (tf + k1 * normalizedLen)
+        bm25tf = (tf * (k1 + 1)) / (tf + k1 * normalizedLen)
 
-        return saturation
+        return bm25tf
+
+    def getBM25(self, docID: int, term: str) -> float:
+        bm25tf = self.getBM25TF(docID, term)
+        bm25idf = self.getBM25IDF(term)
+
+        return bm25tf * bm25idf
 
     def build(self):
         movies = loadMovies()
