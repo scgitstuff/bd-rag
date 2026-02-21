@@ -12,12 +12,12 @@ def bm25idfCommand(token: str):
     print(f"BM25 IDF score of '{token}': {bm25idf:.2f}")
 
 
-def bm25tfCommand(id: int, token: str, k1: int):
+def bm25tfCommand(id: int, token: str, k1: float, b: float):
     movieIndex = _loadIndex()
     if movieIndex is None:
         return
 
-    score = movieIndex.getBM25TF(id, token, k1)
+    score = movieIndex.getBM25TF(id, token, k1, b)
     print(f"BM25 TF score of '{token}' in document '{id}': {score:.2f}")
 
 

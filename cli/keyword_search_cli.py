@@ -24,6 +24,13 @@ def main() -> None:
         default=const.BM25_K1,
         help="Tunable BM25 K1 parameter",
     )
+    bm25tfParser.add_argument(
+        "b",
+        type=float,
+        nargs="?",
+        default=const.BM25_B,
+        help="Tunable BM25 b parameter",
+    )
 
     subParsers.add_parser("build", help="Build the inverted index")
 
@@ -53,7 +60,7 @@ def main() -> None:
         case "bm25idf":
             cmds.bm25idfCommand(args.term)
         case "bm25tf":
-            cmds.bm25tfCommand(args.docID, args.term, args.k1)
+            cmds.bm25tfCommand(args.docID, args.term, args.k1, args.b)
         case "build":
             cmds.buildCommand()
         case "idf":
