@@ -6,6 +6,7 @@ boot.dev "Retrieval Augmented Generation" project
 
 ```shell
 uv add nltk==3.9.1
+uv add sentence-transformers
 ```
 
 # data files
