@@ -6,7 +6,8 @@ boot.dev "Retrieval Augmented Generation" project
 
 ```shell
 uv add nltk==3.9.1
-uv add sentence-transformers
+# I have an old video card, need older torch
+uv add sentence-transformers torch==2.6
 ```
 
 # data files
