@@ -83,3 +83,13 @@ def verifyEmbeddings():
     print(
         f"Embeddings shape: {embeddings.shape[0]} vectors in {embeddings.shape[1]} dimensions"
     )
+
+
+def embedQuery(query: str):
+    ss = SemanticSearch()
+    embedding = ss.generateEmbedding(query)
+
+    print()
+    print(f"Query: {query}")
+    print(f"First 5 dimensions: {embedding[:5]}")
+    print(f"Shape: {embedding.shape}")
