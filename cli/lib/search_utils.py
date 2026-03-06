@@ -8,19 +8,19 @@ import string
 from nltk.stem import PorterStemmer  # type: ignore
 
 
-MOVIES_FILE = "data/movies.json"
-STOP_FILE = "data/stopwords.txt"
+_MOVIES_FILE = "data/movies.json"
+_STOP_FILE = "data/stopwords.txt"
 
 
 def loadMovies() -> list[dict[str, str]]:
-    with open(MOVIES_FILE, "r") as f:
+    with open(_MOVIES_FILE, "r") as f:
         data = json.load(f)
 
     return data["movies"]
 
 
 def loadStopWords() -> frozenset[str]:
-    with open(STOP_FILE, "r") as f:
+    with open(_STOP_FILE, "r") as f:
         lines = f.read().splitlines()
 
     return frozenset(lines)
