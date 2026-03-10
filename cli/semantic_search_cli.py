@@ -33,6 +33,36 @@ def main():
         help="Number of results to return",
     )
 
+    chunkParser = subParsers.add_parser("chunk", help="Search chunk")
+    chunkParser.add_argument("text", type=str, help="Text to embed")
+    chunkParser.add_argument(
+        "--chunk-size",
+        type=int,
+        default=200,
+        help="chunk size",
+    )
+    chunkParser.add_argument(
+        "--overlap",
+        type=int,
+        default=0,
+        help="overlap",
+    )
+
+    semanticChunkParser = subParsers.add_parser("semantic_chunk", help="semantic_chunk")
+    semanticChunkParser.add_argument("text", type=str, help="Text to embed")
+    semanticChunkParser.add_argument(
+        "--max-chunk-size",
+        type=int,
+        default=4,
+        help="chunk size",
+    )
+    semanticChunkParser.add_argument(
+        "--overlap",
+        type=int,
+        default=0,
+        help="overlap",
+    )
+
     args = parser.parse_args()
 
     match args.command:
@@ -46,6 +76,10 @@ def main():
             cmds.embedQueryCommand(args.query)
         case "search":
             cmds.semanticSearchCommand(args.query, args.limit)
+        case "chunk":
+            cmds.chunkCommand(args.text, args.chunk_size, args.overlap)
+        case "semantic_chunk":
+            cmds.semanticChunkCommand(args.text, args.max_chunk_size, args.overlap)
         case _:
             parser.print_help()
 
