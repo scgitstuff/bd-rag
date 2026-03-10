@@ -1,4 +1,5 @@
 import json
+import regex as re
 import string
 
 # Pylance has problems with this import
@@ -45,3 +46,47 @@ def cleanWords(text: str, stopWords: frozenset[str]) -> list[str]:
             out.append(stemmer.stem(word))  # type: ignore
 
     return out
+
+
+def makeChunks(text: str, chunkSize: int, overlap: int) -> list[str]:
+    words = text.split()
+    count = len(words)
+    start = 0
+    end = chunkSize
+    chunks: list[str] = []
+
+    while True:
+        chunkWords = words[start:end]
+        if len(chunkWords) == 0:
+            break
+        chunks.append(" ".join(chunkWords))
+
+        if end >= count:
+            break
+
+        start = end - overlap
+        end += chunkSize
+
+    return chunks
+
+
+def makeSemanticChunks(text: str, maxChunkSize: int, overlap: int) -> list[str]:
+    sentences = re.split(pattern=r"(?<=[.!?])\s+", string=text)
+    count = len(sentences)
+    start = 0
+    chunks: list[str] = []
+
+    while True:
+        end = start + maxChunkSize
+
+        chunkSentences = sentences[start:end]
+        if len(chunkSentences) < 1:
+            break
+        chunks.append(" ".join(chunkSentences))
+
+        if end >= count:
+            break
+
+        start = start + maxChunkSize - overlap
+
+    return chunks
