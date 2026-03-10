@@ -1,11 +1,5 @@
 import argparse
-from lib.semantic_search import (
-    verifyModel,
-    embedTextCommand,
-    verifyEmbeddingsCommand,
-    embedQueryCommand,
-    semanticSearchCommand,
-)
+import lib.commands_ss as cmds
 
 
 def main():
@@ -43,15 +37,15 @@ def main():
 
     match args.command:
         case "embed_text":
-            embedTextCommand(args.text)
+            cmds.embedTextCommand(args.text)
         case "verify":
-            verifyModel()
+            cmds.verifyModelCommand
         case "verify_embeddings":
-            verifyEmbeddingsCommand()
+            cmds.verifyEmbeddingsCommand()
         case "embedquery":
-            embedQueryCommand(args.query)
+            cmds.embedQueryCommand(args.query)
         case "search":
-            semanticSearchCommand(args.query, args.limit)
+            cmds.semanticSearchCommand(args.query, args.limit)
         case _:
             parser.print_help()
 

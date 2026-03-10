@@ -5,6 +5,8 @@
         "linalg",
         "nltk",
         "numpy",
+        "scommands",
+        "sscommands",
         "stopwords",
         "tfidf"
     ]

@@ -1,5 +1,5 @@
 import argparse
-import lib.commands as cmds
+import lib.commands_s as cmds
 import lib.constants as const
 
 
