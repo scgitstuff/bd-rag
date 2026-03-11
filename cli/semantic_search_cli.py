@@ -22,45 +22,64 @@ def main():
     )
     embedQueryParser.add_argument("query", type=str, help="Query to embed")
 
-    embedSearchParser = subParsers.add_parser(
+    semanticSearchParser = subParsers.add_parser(
         "search", help="Search for movies using semantic search"
     )
-    embedSearchParser.add_argument("query", type=str, help="Search query")
-    embedSearchParser.add_argument(
+    semanticSearchParser.add_argument("query", type=str, help="Search query")
+    semanticSearchParser.add_argument(
         "--limit",
         type=int,
         default=5,
         help="Number of results to return",
     )
 
-    chunkParser = subParsers.add_parser("chunk", help="Search chunk")
-    chunkParser.add_argument("text", type=str, help="Text to embed")
+    chunkParser = subParsers.add_parser(
+        "chunk", help="Split text into fixed-size chunks with optional overlap"
+    )
+    chunkParser.add_argument("text", type=str, help="Text to chunk")
     chunkParser.add_argument(
         "--chunk-size",
         type=int,
         default=200,
-        help="chunk size",
+        help="Size of each chunk in words",
     )
     chunkParser.add_argument(
         "--overlap",
         type=int,
         default=0,
-        help="overlap",
+        help="Number of words to overlap between chunks",
     )
 
-    semanticChunkParser = subParsers.add_parser("semantic_chunk", help="semantic_chunk")
-    semanticChunkParser.add_argument("text", type=str, help="Text to embed")
+    semanticChunkParser = subParsers.add_parser(
+        "semantic_chunk", help="Split text on sentence boundaries to preserve meaning"
+    )
+    semanticChunkParser.add_argument("text", type=str, help="Text to chunk")
     semanticChunkParser.add_argument(
         "--max-chunk-size",
         type=int,
         default=4,
-        help="chunk size",
+        help="Maximum size of each chunk in sentences",
     )
     semanticChunkParser.add_argument(
         "--overlap",
         type=int,
         default=0,
-        help="overlap",
+        help="Number of sentences to overlap between chunks",
+    )
+
+    subParsers.add_parser(
+        "embed_chunks", help="Generate embeddings for chunked documents"
+    )
+
+    semanticSearchChunkedParser = subParsers.add_parser(
+        "search_chunked", help="Search using chunked embeddings"
+    )
+    semanticSearchChunkedParser.add_argument("query", type=str, help="Search query")
+    semanticSearchChunkedParser.add_argument(
+        "--limit",
+        type=int,
+        default=5,
+        help="Number of results to return",
     )
 
     args = parser.parse_args()
@@ -80,6 +99,10 @@ def main():
             cmds.chunkCommand(args.text, args.chunk_size, args.overlap)
         case "semantic_chunk":
             cmds.semanticChunkCommand(args.text, args.max_chunk_size, args.overlap)
+        case "embed_chunks":
+            cmds.embedChunksCommand()
+        case "search_chunked":
+            cmds.semanticSearchChunkedCommand(args.query, args.limit)
         case _:
             parser.print_help()
 

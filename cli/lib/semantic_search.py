@@ -1,22 +1,24 @@
-from sentence_transformers import SentenceTransformer
-from typing import Any, Dict, List, Tuple, Union
-from pathlib import Path
 import numpy as np
 
 from numpy.typing import NDArray
+from pathlib import Path
+from sentence_transformers import SentenceTransformer
+from typing import Any
 
 
 _EMBED_FILE = Path("cache/movie_embeddings.npy")
 
 
 class SemanticSearch:
-    def __init__(self):
-        self.model = SentenceTransformer("all-MiniLM-L6-v2")
+    def __init__(self, modelName: str = "all-MiniLM-L6-v2"):
+        self.model = SentenceTransformer(modelName)
+
         # this should be the typing, but does not work
         # I'm not familiar enough with numpy to make it work
         # self.embeddings: Union[NDArray[NDArray[np.float32]], None] = None
-        self.embeddings: Union[NDArray[Any], None] = None
-        self.documents: Union[list[dict[str, str]], None] = None
+        self.embeddings: NDArray[Any] | None = None
+
+        self.documents: list[dict[str, str]] | None = None
         self.docmap: dict[int, dict[str, str]] = {}
 
     def generateEmbedding(self, text: str) -> NDArray[np.float32]:
@@ -68,7 +70,7 @@ class SemanticSearch:
         return self.buildEmbeddings(documents)
 
     def search(self, query: str, limit: int):
-        out: List[Dict[str, str | float]] = []
+        out: list[dict[str, str | float]] = []
 
         if self.embeddings is None or self.embeddings.size == 0:
             print("No embeddings loaded. Call `loadEmbeddings()` first.")
@@ -80,10 +82,10 @@ class SemanticSearch:
             )
 
         queryEmbedding = self.generateEmbedding(query)
-        similarities: List[Tuple[float, Dict[str, str]]] = []
+        similarities: list[tuple[float, dict[str, str]]] = []
 
         for i, embedding in enumerate(self.embeddings):
-            similarity = _cosSimilarity(queryEmbedding, embedding)
+            similarity = self._cosSimilarity(queryEmbedding, embedding)
             similarities.append((similarity, self.documents[i]))
 
         similarities.sort(key=lambda x: x[0], reverse=True)
@@ -99,14 +101,15 @@ class SemanticSearch:
 
         return out
 
+    # code provided by lesson
+    def _cosSimilarity(
+        self, vec1: NDArray[np.float32], vec2: NDArray[np.float32]
+    ) -> float:
+        dot_product = np.dot(vec1, vec2)
+        norm1 = np.linalg.norm(vec1)
+        norm2 = np.linalg.norm(vec2)
 
-# code provided by lesson
-def _cosSimilarity(vec1: NDArray[np.float32], vec2: NDArray[np.float32]) -> float:
-    dot_product = np.dot(vec1, vec2)
-    norm1 = np.linalg.norm(vec1)
-    norm2 = np.linalg.norm(vec2)
+        if norm1 == 0 or norm2 == 0:
+            return 0.0
 
-    if norm1 == 0 or norm2 == 0:
-        return 0.0
-
-    return dot_product / (norm1 * norm2)
+        return dot_product / (norm1 * norm2)

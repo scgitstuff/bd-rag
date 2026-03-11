@@ -1,5 +1,6 @@
 from .search_utils import loadMovies, makeChunks, makeSemanticChunks
 from .semantic_search import SemanticSearch
+from .chunked_semantic_search import ChunkedSemanticSearch
 
 
 def verifyModelCommand():
@@ -76,3 +77,26 @@ def semanticChunkCommand(text: str, maxChunkSize: int, overlap: int):
     print(f"Semantically chunking {len(text)} characters")
     for i, chunk in enumerate(chunks, 1):
         print(f"{i}. {chunk}")
+
+
+def embedChunksCommand():
+    css = ChunkedSemanticSearch()
+    movies = loadMovies()
+    embeddings = css.loadChunkEmbeddings(movies)
+
+    if embeddings is None:
+        print(f"embeddings is None")
+        return
+
+    print(f"Generated {len(embeddings)} chunked embeddings")
+
+
+def semanticSearchChunkedCommand(query: str, limit: int):
+    css = ChunkedSemanticSearch()
+    movies = loadMovies()
+    css.loadChunkEmbeddings(movies)
+    results = css.searchChunks(query, limit)
+
+    for i, res in enumerate(results, 1):
+        print(f"\n{i}. {res["title"]} (score: {res["score"]})")
+        print(f"   {res["document"]}...")
