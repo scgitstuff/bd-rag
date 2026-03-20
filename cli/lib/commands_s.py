@@ -1,4 +1,4 @@
-from .search import searchKeyWord, bm25Search
+from .keyword_search import searchKeyWord, bm25Search
 from .index import InvertedIndex
 from .search_utils import loadStopWords
 
