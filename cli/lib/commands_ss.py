@@ -1,4 +1,4 @@
-from .search_utils import loadMovies, makeChunks, makeSemanticChunks
+from .search_utils import loadMovies, makeFixedChunks, makeSemanticChunks
 from .semantic_search import SemanticSearch
 from .chunked_semantic_search import ChunkedSemanticSearch
 
@@ -66,7 +66,7 @@ def semanticSearchCommand(query: str, limit: int):
 
 
 def chunkCommand(text: str, chunk_size: int, overlap: int):
-    chunks = makeChunks(text, chunk_size, overlap)
+    chunks = makeFixedChunks(text, chunk_size, overlap)
     print(f"Chunking {len(text)} characters")
     for i, chunk in enumerate(chunks, 1):
         print(f"{i}. {chunk}")
