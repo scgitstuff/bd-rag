@@ -1,6 +1,6 @@
 from .keyword_search import searchKeyWord, bm25Search
 from .index import InvertedIndex
-from .search_utils import loadStopWords
+from .search_utils import loadStopWords, loadMovies
 
 
 def bm25idfCommand(token: str):
@@ -25,7 +25,8 @@ def buildCommand():
     print("Building inverted index...")
 
     movieIndex = InvertedIndex(loadStopWords())
-    movieIndex.build()
+    movies = loadMovies()
+    movieIndex.build(movies)
     movieIndex.save()
 
     print("Inverted index built successfully.")

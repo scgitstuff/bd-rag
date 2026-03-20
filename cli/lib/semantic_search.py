@@ -55,7 +55,7 @@ class SemanticSearch:
     def loadEmbeddings(
         self, documents: list[dict[str, str]]
     ) -> NDArray[np.float32] | None:
-        
+
         self.documents = documents
         self.document_map = {}
 
@@ -108,7 +108,7 @@ class SemanticSearch:
     def _cosSimilarity(
         self, vec1: NDArray[np.float32], vec2: NDArray[np.float32]
     ) -> float:
-        
+
         dot_product = np.dot(vec1, vec2)
         norm1 = np.linalg.norm(vec1)
         norm2 = np.linalg.norm(vec2)

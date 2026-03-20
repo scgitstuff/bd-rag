@@ -3,7 +3,7 @@ import math
 from pathlib import Path
 from pickle import dump, load
 from functools import reduce
-from .search_utils import cleanWords, loadMovies
+from .search_utils import cleanWords
 import lib.constants as const
 
 
@@ -77,9 +77,7 @@ class InvertedIndex:
 
         return bm25tf * bm25idf
 
-    def build(self):
-        movies = loadMovies()
-
+    def build(self, movies: list[dict[str, str]]):
         for m in movies:
             id = int(m["id"])
             text = f"{m['title']} {m['description']}"
