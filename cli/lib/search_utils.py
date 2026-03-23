@@ -108,3 +108,21 @@ def makeSemanticChunks(text: str, maxChunkSize: int, overlap: int) -> list[str]:
         start = start + maxChunkSize - overlap
 
     return chunks
+
+
+# (score - min_score) / (max_score - min_score)
+def normalize(scores: list[float]) -> list[float]:
+    if not scores:
+        return []
+
+    minScore = min(scores)
+    maxScore = max(scores)
+
+    if minScore == maxScore:
+        return [1.0] * len(scores)
+
+    out: list[float] = []
+    for score in scores:
+        out.append((score - minScore) / (maxScore - minScore))
+
+    return out
