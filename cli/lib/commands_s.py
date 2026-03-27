@@ -1,10 +1,11 @@
 from .keyword_search import searchKeyWord, bm25Search
 from .index import InvertedIndex
 from .search_utils import loadStopWords, loadMovies
+from .commands_util import loadIndex
 
 
 def bm25idfCommand(token: str):
-    movieIndex = _loadIndex()
+    movieIndex = loadIndex()
     if movieIndex is None:
         return
 
@@ -13,7 +14,7 @@ def bm25idfCommand(token: str):
 
 
 def bm25tfCommand(id: int, token: str, k1: float, b: float):
-    movieIndex = _loadIndex()
+    movieIndex = loadIndex()
     if movieIndex is None:
         return
 
@@ -33,7 +34,7 @@ def buildCommand():
 
 
 def idfCommand(token: str):
-    movieIndex = _loadIndex()
+    movieIndex = loadIndex()
     if movieIndex is None:
         return
 
@@ -44,7 +45,7 @@ def idfCommand(token: str):
 def searchCommand(query: str):
     print(f"Searching for: {query}")
 
-    movieIndex = _loadIndex()
+    movieIndex = loadIndex()
     if movieIndex is None:
         return
 
@@ -56,7 +57,7 @@ def searchCommand(query: str):
 def bm25searchCommand(query: str):
     print(f"Searching for: {query}")
 
-    movieIndex = _loadIndex()
+    movieIndex = loadIndex()
     if movieIndex is None:
         return
 
@@ -66,7 +67,7 @@ def bm25searchCommand(query: str):
 
 
 def tfCommand(id: int, token: str):
-    movieIndex = _loadIndex()
+    movieIndex = loadIndex()
     if movieIndex is None:
         return
 
@@ -75,7 +76,7 @@ def tfCommand(id: int, token: str):
 
 
 def tfidfCommand(id: int, token: str):
-    movieIndex = _loadIndex()
+    movieIndex = loadIndex()
     if movieIndex is None:
         return
 
@@ -83,12 +84,3 @@ def tfidfCommand(id: int, token: str):
     print(f"TF-IDF score of '{token}' in document '{id}': {tfidf:.2f}")
 
 
-def _loadIndex() -> InvertedIndex | None:
-    movieIndex = InvertedIndex(loadStopWords())
-    try:
-        movieIndex.load()
-    except Exception as e:
-        print(e)
-        return None
-
-    return movieIndex

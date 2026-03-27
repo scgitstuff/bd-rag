@@ -111,14 +111,14 @@ class ChunkedSemanticSearch(SemanticSearch):
         for id, score in sortedScores[:limit]:
             movie = self.docmap[id]
             title = movie["title"]
-            document = movie["description"][:100]
+            description = movie["description"]
             score = round(score, 4)
 
             out.append(
                 {
                     "id": f"{id}",
                     "title": title,
-                    "document": document,
+                    "description": description,
                     "score": f"{score:.4f}",
                 }
             )

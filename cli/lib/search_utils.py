@@ -126,3 +126,5 @@ def normalize(scores: list[float]) -> list[float]:
         out.append((score - minScore) / (maxScore - minScore))
 
     return out
+
+

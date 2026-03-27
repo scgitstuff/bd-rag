@@ -99,4 +99,4 @@ def semanticSearchChunkedCommand(query: str, limit: int):
 
     for i, res in enumerate(results, 1):
         print(f"\n{i}. {res["title"]} (score: {res["score"]})")
-        print(f"   {res["document"]}...")
+        print(f"   {res["description"][:100]}...")
