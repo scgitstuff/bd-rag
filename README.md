@@ -6,9 +6,15 @@ boot.dev "Retrieval Augmented Generation" project
 
 ```shell
 uv add nltk==3.9.1
+
 # I have an old video card, need older torch
 uv add sentence-transformers torch==2.6
+
 uv add numpy
+
+uv add python-dotenv
+uv add google-genai
+
 ```
 
 # data files
