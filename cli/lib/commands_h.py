@@ -39,3 +39,24 @@ def weightedSearchCommand(query: str, alpha: float, limit: int):
         print(f"   Hybrid Score: {hybrid:.3f}")
         print(f"   BM25: {bm25:.3f}, Semantic: {semantic:.3f}")
         print(f"   {movie['description'][:100]}")
+
+
+def rrfSearchCommand(query: str, k: int, limit: int):
+    movieIndex = loadIndex()
+    if movieIndex is None:
+        return
+
+    movies = loadMovies()
+    hs = HybridSearch(movies, movieIndex)
+    movies = hs.rrfSearch(query, k, limit)
+
+    for i, movie in enumerate(movies, 1):
+        rrf = float(movie["rrf"])
+        bm25Rank = int(movie["bm25Rank"])
+        semanticRank = int(movie["semanticRank"])
+
+        print()
+        print(f"{i}. {movie["title"]}")
+        print(f"   RRF Score: {rrf:.3f}")
+        print(f"   BM25 Rank: {bm25Rank}, Semantic Rank: {semanticRank}")
+        print(f"   {movie['description'][:100]}")

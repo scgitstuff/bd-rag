@@ -77,9 +77,63 @@ class HybridSearch:
 
         return out
 
-    def rrfSearch(self, query: str, k: float, limit: int) -> None:
-        raise NotImplementedError("RRF hybrid search is not implemented yet.")
+    def rrfSearch(self, query: str, k: int, limit: int) -> list[dict[str, str]]:
+        bigLimit = limit * 500
+
+        # search
+        bm25Results = self._bm25Search(query, bigLimit)
+        semanticResults = self.search.searchChunks(query, bigLimit)
+
+        # build dict union of both searches
+        allResults: dict[int, dict[str, str]] = {}
+        for i in range(len(bm25Results)):
+            id = int(bm25Results[i]["id"])
+            allResults[id] = allResults.get(id, {})
+            allResults[id]["bm25Rank"] = f"{i+1}"
+        for i in range(len(semanticResults)):
+            id = int(semanticResults[i]["id"])
+            allResults[id] = allResults.get(id, {})
+            allResults[id]["semanticRank"] = f"{i+1}"
+
+        # calculate RRF score
+        lastRank = len(allResults) + 1
+        for id, d in allResults.items():
+            # fill in blanks for IDs that only existed in one list
+            d["bm25Rank"] = d.get("bm25Rank", f"{lastRank}")
+            d["semanticRank"] = d.get("semanticRank", f"{lastRank}")
+
+            rrf = _rrfScore(int(d["bm25Rank"]), k) + _rrfScore(
+                int(d["semanticRank"]), k
+            )
+            d["rrf"] = f"{rrf}"
+
+        # sort on RRF
+        sortedResults: dict[int, dict[str, str]] = {
+            id: d
+            for id, d in sorted(
+                allResults.items(),
+                key=lambda item: float(item[1]["rrf"]),
+                reverse=True,
+            )
+        }
+
+        # apply limit, add details for top results
+        out: list[dict[str, str]] = []
+        for id, d in sortedResults.items():
+            d["id"] = f"{id}"
+            d["title"] = self.idx.docmap[id]["title"]
+            d["description"] = self.idx.docmap[id]["description"]
+
+            out.append(d)
+            if len(out) == limit:
+                return out
+
+        return out
 
 
 def _hybridScore(bm25Score: float, semanticScore: float, alpha: float = 0.5) -> float:
     return alpha * bm25Score + (1 - alpha) * semanticScore
+
+
+def _rrfScore(rank: int, k: int) -> float:
+    return 1 / (k + rank)
