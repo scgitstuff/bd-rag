@@ -2,4 +2,8 @@ BM25_K1 = 1.5
 BM25_B = 0.75
 
 # TODO: move hard coded defaults to here
-# should probably be frozen dataclass variables
+
+
+SPELL = "spell"
+REWRITE = "rewrite"
+ENH_LIST = [SPELL, REWRITE]

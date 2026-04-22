@@ -1,5 +1,6 @@
 import argparse
 import lib.commands_h as cmds
+import lib.constants as const
 
 
 def main() -> None:
@@ -43,7 +44,7 @@ def main() -> None:
     rrfSearchParser.add_argument(
         "--enhance",
         type=str,
-        choices=["spell"],
+        choices=const.ENH_LIST,
         help="Query enhancement method",
     )
 
