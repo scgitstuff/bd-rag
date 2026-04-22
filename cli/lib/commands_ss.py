@@ -60,9 +60,8 @@ def semanticSearchCommand(query: str, limit: int):
     stuff = ss.search(query, limit)
 
     for i, thingy in enumerate(stuff, 1):
-        print("\n\n")
-        print(f"{i}. {thingy["title"]} (score: {thingy["score"]:.4f})")
-        print(f"   {thingy["description"]}")
+        print(f"\n{i}. {thingy["title"]} (score: {float(thingy["score"]):.4f})")
+        print(f"   {thingy["description"][:100]}")
 
 
 def chunkCommand(text: str, chunk_size: int, overlap: int):

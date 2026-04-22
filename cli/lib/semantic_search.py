@@ -73,7 +73,7 @@ class SemanticSearch:
         return self.buildEmbeddings(documents)
 
     def search(self, query: str, limit: int):
-        out: list[dict[str, str | float]] = []
+        out: list[dict[str, str]] = []
 
         if self.embeddings is None or self.embeddings.size == 0:
             print("No embeddings loaded. Call `loadEmbeddings()` first.")
@@ -96,7 +96,7 @@ class SemanticSearch:
         for score, doc in similarities[:limit]:
             out.append(
                 {
-                    "score": score,
+                    "score": f"{score}",
                     "title": doc["title"],
                     "description": doc["description"],
                 }
