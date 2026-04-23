@@ -92,31 +92,37 @@ class ChunkedSemanticSearch(SemanticSearch):
 
             chunkScores.append(
                 {
-                    "movie_idx": meta["movie_idx"],
                     "chunk_idx": i,
+                    "movie_idx": meta["movie_idx"],
                     "score": chunkScore,
                 },
             )
 
         movieScores: dict[int, float] = {}
         for chunkScore in chunkScores:
-            id = int(chunkScore["movie_idx"])
+            movie_idx = int(chunkScore["movie_idx"])
             score = chunkScore["score"]
 
-            if id not in movieScores.keys() or score > movieScores[id]:
-                movieScores[id] = score
+            if movie_idx not in movieScores or score > movieScores[movie_idx]:
+                movieScores[movie_idx] = score
 
         sortedScores = sorted(movieScores.items(), key=lambda x: x[1], reverse=True)
 
-        for id, score in sortedScores[:limit]:
-            movie = self.docmap[id]
+        if self.documents is None:
+            raise ValueError(
+                "ChunkedSemanticSearch.documents is None, this should never happen"
+            )
+
+        for movie_idx, score in sortedScores[:limit]:
+            movie = self.documents[movie_idx]
+            movieID = movie["id"]
             title = movie["title"]
             description = movie["description"]
             score = round(score, 4)
 
             out.append(
                 {
-                    "id": f"{id}",
+                    "id": movieID,
                     "title": title,
                     "description": description,
                     "score": f"{score:.4f}",
