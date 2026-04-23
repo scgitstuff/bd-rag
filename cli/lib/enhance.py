@@ -10,6 +10,7 @@ if not _api_key:
     raise RuntimeError("GEMINI_API_KEY environment variable not set")
 
 _client = genai.Client(api_key=_api_key)
+_model = "gemma-3-27b-it"
 
 
 # the solution runs this code in rrfSearch()
@@ -42,10 +43,12 @@ Examples:
 User query: "{query}"
 """
 
-    out = _getContent(contents)
-    print(f"\nEnhanced query ({const.EXPAND}): '{query}' -> '{out}'\n")
+    corrected = _getContent(contents)
+    if corrected:
+        print(f"\nEnhanced query ({const.EXPAND}): '{query}' -> '{corrected}'\n")
+        return corrected
 
-    return out
+    return query
 
 
 def _rewrite(query: str) -> str:
@@ -69,10 +72,12 @@ Output only the rewritten query text, nothing else.
 User query: "{query}"
 """
 
-    out = _getContent(contents)
-    print(f"\nEnhanced query ({const.REWRITE}): '{query}' -> '{out}'\n")
+    corrected = _getContent(contents)
+    if corrected:
+        print(f"\nEnhanced query ({const.REWRITE}): '{query}' -> '{corrected}'\n")
+        return corrected
 
-    return out
+    return query
 
 
 def _spellCheck(query: str) -> str:
@@ -84,16 +89,17 @@ Output only the final query text, nothing else.
 User query: "{query}"
 """
 
-    out = _getContent(contents)
-    print(f"\nEnhanced query ({const.SPELL}): '{query}' -> '{out}'\n")
+    corrected = _getContent(contents)
+    if corrected:
+        print(f"\nEnhanced query ({const.SPELL}): '{query}' -> '{corrected}'\n")
+        return corrected
 
-    return out
+    return query
 
 
 def _getContent(contents: str) -> str:
     response = _client.models.generate_content(  # type: ignore
-        model="gemma-3-27b-it",
-        contents=contents,
+        model=_model, contents=contents
     )
 
     out: str = ""
