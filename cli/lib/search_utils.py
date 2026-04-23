@@ -72,40 +72,32 @@ def makeFixedChunks(text: str, chunkSize: int, overlap: int) -> list[str]:
 
 def makeSemanticChunks(text: str, maxChunkSize: int, overlap: int) -> list[str]:
     text = text.strip()
-    if text == "":
+    if not text:
         return []
 
-    sentences = re.split(pattern=r"(?<=[.!?])\s+", string=text)
-    # this is unnecessary
-    # split will return the whole string if nothing is found
-    # you will already have a list with one element containing all the text
-    # if len(sentences) == 1 and not text.endswith((".", "!", "?")):
-    #     print("*****************************")
-    #     print(f"|{text}|")
-    #     print(f"|{sentences[0]}|")
-    #     print("*****************************")
-    #     sentences = [text]
+    sentences = re.split(r"(?<=[.!?])\s+", text)
+    sentences = list(map(lambda x: str(x), sentences))
 
-    count = len(sentences)
-    start = 0
+    if len(sentences) == 1 and not text.endswith((".", "!", "?")):
+        sentences = [text]
+
     chunks: list[str] = []
+    i = 0
+    sentenceCount = len(sentences)
 
-    while True:
-        end = start + maxChunkSize
-        chunkSentences: list[str] = []
-
-        for i in range(start, min(end, count)):
-            sentence = sentences[i].strip()
-            if sentence != "":
-                chunkSentences.append(sentence)
-
-        if len(chunkSentences) > 0:
-            chunks.append(" ".join(chunkSentences))
-
-        if end >= count:
+    while i < sentenceCount:
+        chunk_sentences = sentences[i : i + maxChunkSize]
+        if chunks and len(chunk_sentences) <= overlap:
             break
 
-        start = start + maxChunkSize - overlap
+        cleaned_sentences: list[str] = []
+        for chunk_sentence in chunk_sentences:
+            cleaned_sentences.append(chunk_sentence.strip())
+        if not cleaned_sentences:
+            continue
+        chunk = " ".join(cleaned_sentences)
+        chunks.append(chunk)
+        i += maxChunkSize - overlap
 
     return chunks
 
@@ -126,5 +118,3 @@ def normalize(scores: list[float]) -> list[float]:
         out.append((score - minScore) / (maxScore - minScore))
 
     return out
-
-
