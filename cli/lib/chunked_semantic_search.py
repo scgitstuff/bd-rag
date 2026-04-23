@@ -21,25 +21,25 @@ class ChunkedSemanticSearch(SemanticSearch):
 
     def buildChunkEmbeddings(self, documents: list[dict[str, str]]):
         self.documents = documents
-        self.document_map = {}
+        self.docmap = {}
+        self.chunkMetadata = []
         allChunks: list[str] = []
 
-        for movie in documents:
-            if not movie["description"]:
+        for idx, movie in enumerate(documents):
+            text = movie.get("description", "")
+            if not text.strip():
                 continue
-            if self.chunkMetadata is None:
-                self.chunkMetadata = []
 
             id = int(movie["id"])
             self.docmap[id] = movie
-            movieChunks = makeSemanticChunks(movie["description"], 4, 1)
+            movieChunks = makeSemanticChunks(text, maxChunkSize=4, overlap=1)
 
             chunkCount = len(movieChunks)
             for i, chunk in enumerate(movieChunks):
                 allChunks.append(chunk)
                 self.chunkMetadata.append(
                     {
-                        "movie_idx": id,
+                        "movie_idx": idx,
                         "chunk_idx": i,
                         "total_chunks": chunkCount,
                     }
