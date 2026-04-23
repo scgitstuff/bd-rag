@@ -96,15 +96,17 @@ class HybridSearch:
             allResults[id]["semanticRank"] = f"{i+1}"
 
         # calculate RRF score
-        lastRank = len(allResults) + 1
+        # lastRank = len(allResults) + 1
         for id, d in allResults.items():
             # fill in blanks for IDs that only existed in one list
-            d["bm25Rank"] = d.get("bm25Rank", f"{lastRank}")
-            d["semanticRank"] = d.get("semanticRank", f"{lastRank}")
+            d["bm25Rank"] = d.get("bm25Rank", "")
+            d["semanticRank"] = d.get("semanticRank", "")
 
-            rrf = _rrfScore(int(d["bm25Rank"]), k) + _rrfScore(
-                int(d["semanticRank"]), k
-            )
+            rrf = 0.0
+            if d["bm25Rank"]:
+                rrf += _rrfScore(int(d["bm25Rank"]), k)
+            if d["semanticRank"]:
+                rrf += _rrfScore(int(d["semanticRank"]), k)
             d["rrf"] = f"{rrf}"
 
         # sort on RRF

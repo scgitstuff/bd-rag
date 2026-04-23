@@ -6,4 +6,5 @@ BM25_B = 0.75
 
 SPELL = "spell"
 REWRITE = "rewrite"
-ENH_LIST = [SPELL, REWRITE]
+EXPAND = "expand"
+ENH_LIST = [SPELL, REWRITE, EXPAND]
