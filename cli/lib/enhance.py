@@ -46,7 +46,7 @@ User query: "{query}"
     corrected = _getContent(contents)
     if corrected:
         print(f"\nEnhanced query ({const.EXPAND}): '{query}' -> '{corrected}'\n")
-        return corrected
+        return f"{query} {corrected}".strip()
 
     return query
 
