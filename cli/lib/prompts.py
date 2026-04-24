@@ -1,7 +1,7 @@
 import os
 from dotenv import load_dotenv
 from google import genai
-from lib.constants import EnhanceOptions
+from .constants import EnhanceOptions, RerankMethods
 
 
 load_dotenv()
@@ -11,6 +11,20 @@ if not _api_key:
 
 _client = genai.Client(api_key=_api_key)
 _model = "gemma-3-27b-it"
+
+
+def rerankResults(
+    movies: list[dict[str, str]], rerankMethod: str
+) -> list[dict[str, str]]:
+
+    match rerankMethod:
+        case RerankMethods.INDIVIDUAL:
+            print("*************************************")
+            print("Add AI crap here")
+            print("*************************************")
+            return movies
+        case _:
+            return movies
 
 
 # the solution runs this code in rrfSearch()

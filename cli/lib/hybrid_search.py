@@ -2,6 +2,7 @@ from .index import InvertedIndex
 from .chunked_semantic_search import ChunkedSemanticSearch
 from .search_utils import normalize
 from .keyword_search import bm25Search
+from .constants import RerankMethods
 
 
 class HybridSearch:
@@ -77,7 +78,9 @@ class HybridSearch:
 
         return out
 
-    def rrfSearch(self, query: str, k: int, limit: int) -> list[dict[str, str]]:
+    def rrfSearch(
+        self, query: str, k: int, limit: int, rerankMethod: str
+    ) -> list[dict[str, str]]:
         bigLimit = limit * 500
 
         # search
@@ -118,6 +121,9 @@ class HybridSearch:
                 reverse=True,
             )
         }
+
+        if rerankMethod == RerankMethods.INDIVIDUAL:
+            limit *= 5
 
         # apply limit, add details for top results
         out: list[dict[str, str]] = []

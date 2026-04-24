@@ -2,7 +2,8 @@ from .search_utils import normalize
 from .hybrid_search import HybridSearch
 from .commands_util import loadIndex
 from .search_utils import loadMovies
-from .enhance import enhanceQuery
+from .prompts import enhanceQuery,rerankResults
+
 
 
 def normalizeCommand(scores: list[float]):
@@ -51,7 +52,10 @@ def rrfSearchCommand(query: str, k: int, limit: int, enhance: str, rerankMethod:
 
     movies = loadMovies()
     hs = HybridSearch(movies, movieIndex)
-    movies = hs.rrfSearch(query, k, limit)
+    movies = hs.rrfSearch(query, k, limit, rerankMethod)
+
+    if rerankMethod:
+        movies = rerankResults(movies, rerankMethod)
 
     for i, movie in enumerate(movies, 1):
         rrf = float(movie["rrf"])
