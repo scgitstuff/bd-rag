@@ -1,7 +1,7 @@
 import os
 from dotenv import load_dotenv
 from google import genai
-from . import constants as const
+from lib.constants import EnhanceOptions
 
 
 load_dotenv()
@@ -18,11 +18,11 @@ _model = "gemma-3-27b-it"
 # this is a pre-process on the query, not part of the search functionality
 def enhanceQuery(enhance: str, query: str) -> str:
     match enhance:
-        case const.SPELL:
+        case EnhanceOptions.SPELL:
             return _spellCheck(query)
-        case const.REWRITE:
+        case EnhanceOptions.REWRITE:
             return _rewrite(query)
-        case const.EXPAND:
+        case EnhanceOptions.EXPAND:
             return _expand(query)
         case _:
             return query
@@ -45,7 +45,9 @@ User query: "{query}"
 
     corrected = _getContent(contents)
     if corrected:
-        print(f"\nEnhanced query ({const.EXPAND}): '{query}' -> '{corrected}'\n")
+        print(
+            f"\nEnhanced query ({EnhanceOptions.EXPAND}): '{query}' -> '{corrected}'\n"
+        )
         return f"{query} {corrected}".strip()
 
     return query
@@ -74,7 +76,9 @@ User query: "{query}"
 
     corrected = _getContent(contents)
     if corrected:
-        print(f"\nEnhanced query ({const.REWRITE}): '{query}' -> '{corrected}'\n")
+        print(
+            f"\nEnhanced query ({EnhanceOptions.REWRITE}): '{query}' -> '{corrected}'\n"
+        )
         return corrected
 
     return query
@@ -91,7 +95,9 @@ User query: "{query}"
 
     corrected = _getContent(contents)
     if corrected:
-        print(f"\nEnhanced query ({const.SPELL}): '{query}' -> '{corrected}'\n")
+        print(
+            f"\nEnhanced query ({EnhanceOptions.SPELL}): '{query}' -> '{corrected}'\n"
+        )
         return corrected
 
     return query

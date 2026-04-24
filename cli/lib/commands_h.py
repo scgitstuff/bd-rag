@@ -42,7 +42,7 @@ def weightedSearchCommand(query: str, alpha: float, limit: int):
         print(f"   {movie['description'][:100]}")
 
 
-def rrfSearchCommand(query: str, k: int, limit: int, enhance: str):
+def rrfSearchCommand(query: str, k: int, limit: int, enhance: str, rerankMethod: str):
     movieIndex = loadIndex()
     if movieIndex is None:
         return

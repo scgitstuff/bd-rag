@@ -1,6 +1,6 @@
 import argparse
 import lib.commands_h as cmds
-import lib.constants as const
+from lib.constants import EnhanceOptions, RerankMethods
 
 
 def main() -> None:
@@ -39,13 +39,22 @@ def main() -> None:
         help="RRF k parameter controlling weight distribution (default=60)",
     )
     rrfSearchParser.add_argument(
-        "--limit", type=int, default=5, help="Number of results to return (default=5)"
+        "--limit",
+        type=int,
+        default=5,
+        help="Number of results to return (default=5)",
     )
     rrfSearchParser.add_argument(
         "--enhance",
         type=str,
-        choices=const.ENH_LIST,
+        choices=EnhanceOptions.values(),
         help="Query enhancement method",
+    )
+    rrfSearchParser.add_argument(
+        "--rerank-method",
+        type=str,
+        choices=RerankMethods.values(),
+        help="rerank-method",
     )
 
     args = parser.parse_args()
@@ -56,7 +65,9 @@ def main() -> None:
         case "weighted-search":
             cmds.weightedSearchCommand(args.query, args.alpha, args.limit)
         case "rrf-search":
-            cmds.rrfSearchCommand(args.query, args.k, args.limit, args.enhance)
+            cmds.rrfSearchCommand(
+                args.query, args.k, args.limit, args.enhance, args.rerank_method
+            )
         case _:
             parser.print_help()
 
