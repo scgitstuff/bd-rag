@@ -1,4 +1,5 @@
 import os
+import time
 from dotenv import load_dotenv
 from google import genai
 from .constants import EnhanceOptions, RerankMethods
@@ -13,18 +14,39 @@ _client = genai.Client(api_key=_api_key)
 _model = "gemma-3-27b-it"
 
 
-def rerankResults(
-    movies: list[dict[str, str]], rerankMethod: str
-) -> list[dict[str, str]]:
-
+def rerankResults(movies: list[dict[str, str]], rerankMethod: str, query: str):
     match rerankMethod:
         case RerankMethods.INDIVIDUAL:
-            print("*************************************")
-            print("Add AI crap here")
-            print("*************************************")
-            return movies
+            _rerankAll(movies, query)
+            return
         case _:
-            return movies
+            return
+
+
+def _rerankAll(movies: list[dict[str, str]], query: str):
+    for movie in movies:
+        _rerankIndividual(movie, query)
+        time.sleep(3)
+
+
+def _rerankIndividual(movie: dict[str, str], query: str):
+    contents = f"""Rate how well this movie matches the search query.
+
+Query: "{query}"
+Movie: {movie.get("title", "")} - {movie.get("description", "")}
+
+Consider:
+- Direct relevance to query
+- User intent (what they're looking for)
+- Content appropriateness
+
+Rate 0-10 (10 = perfect match).
+Output ONLY the number in your response, no other text or explanation.
+
+Score:"""
+
+    print(f"Rerank {movie.get("title", "")}")
+    movie["LLM"] = _getContent(contents)
 
 
 # the solution runs this code in rrfSearch()

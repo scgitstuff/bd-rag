@@ -3,6 +3,7 @@ from .chunked_semantic_search import ChunkedSemanticSearch
 from .search_utils import normalize
 from .keyword_search import bm25Search
 from .constants import RerankMethods
+from .prompts import rerankResults
 
 
 class HybridSearch:
@@ -122,6 +123,7 @@ class HybridSearch:
             )
         }
 
+        ogLimit = limit
         if rerankMethod == RerankMethods.INDIVIDUAL:
             limit *= 5
 
@@ -134,7 +136,16 @@ class HybridSearch:
 
             out.append(d)
             if len(out) == limit:
-                return out
+                break
+
+        if rerankMethod == RerankMethods.INDIVIDUAL:
+            rerankResults(out, rerankMethod, query)
+
+            # sort on LLM
+            out.sort(reverse=True, key=lambda d: d["LLM"])
+
+            # apply original limit
+            return out[:ogLimit]
 
         return out
 
