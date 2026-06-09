@@ -74,9 +74,9 @@ def main() -> None:
                 f"Weighted Hybrid Search Results for '{result['query']}' (alpha={result['alpha']}):"
             )
             print(
-                f"  Alpha {result['alpha']}: {int(result['alpha'] * 100)}% Keyword, {int((1 - result['alpha']) * 100)}% Semantic"
+                f"  Alpha {result['alpha']}: {int(result['alpha'] * 100)}% Keyword, {int((1 - result['alpha']) * 100)}% Semantic"  # type: ignore
             )
-            for i, res in enumerate(result["results"], 1):
+            for i, res in enumerate(result["results"], 1):  # type: ignore
                 print(f"{i}. {res['title']}")
                 print(f"   Hybrid Score: {res.get('score', 0):.3f}")
                 metadata = res.get("metadata", {})
@@ -98,14 +98,14 @@ def main() -> None:
 
             if result["reranked"]:
                 print(
-                    f"Re-ranking top {len(result['results'])} results using {result['rerank_method']} method...\n"
+                    f"Re-ranking top {len(result['results'])} results using {result['rerank_method']} method...\n"  # type: ignore
                 )
 
             print(
                 f"Reciprocal Rank Fusion Results for '{result['query']}' (k={result['k']}):"
             )
 
-            for i, res in enumerate(result["results"], 1):
+            for i, res in enumerate(result["results"], 1):  # type: ignore
                 print(f"{i}. {res['title']}")
                 if "individual_score" in res:
                     print(f"   Re-rank Score: {res.get('individual_score', 0):.3f}/10")
