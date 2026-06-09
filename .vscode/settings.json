@@ -1,0 +1,16 @@
+{
+    "cSpell.words": [
+        "docmap",
+        "dotenv",
+        "embedquery",
+        "genai",
+        "linalg",
+        "nltk",
+        "numpy",
+        "rerank",
+        "scommands",
+        "sscommands",
+        "stopwords",
+        "tfidf"
+    ]
+}
