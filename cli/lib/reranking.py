@@ -1,5 +1,6 @@
 # pyright: standard
 
+import json
 import os
 from time import sleep
 
@@ -13,6 +14,52 @@ if not api_key:
 
 client = genai.Client(api_key=api_key)
 model = "gemma-4-31b-it"
+
+
+def llm_rerank_batch(query: str, documents: list[dict], limit: int = 5) -> list[dict]:
+    if not documents:
+        return []
+
+    doc_map = {}
+    doc_list = []
+    for doc in documents:
+        doc_id = doc["id"]
+        doc_map[doc_id] = doc
+        doc_list.append(
+            f"{doc_id}: {doc.get('title', '')} - {doc.get('document', '')[:200]}"
+        )
+
+    doc_list_str = "\n".join(doc_list)
+
+    prompt = f"""Rank the movies listed below by relevance to the following search query.
+
+    Query: "{query}"
+
+    Movies:
+    {doc_list_str}
+
+    Return the movie IDs in order of relevance, best match first.
+
+    Your response must be a raw JSON array of integers.
+    Do not wrap the JSON in Markdown. Do not use a ```json code block.
+    Do not include any explanatory text.
+
+    For example:
+    [75, 12, 34, 2, 1]
+
+    Ranking:"""
+
+    response = client.models.generate_content(model=model, contents=prompt)
+    ranking_text = (response.text or "").strip()
+
+    parsed_ids = json.loads(ranking_text)
+
+    reranked = []
+    for i, doc_id in enumerate(parsed_ids):
+        if doc_id in doc_map:
+            reranked.append({**doc_map[doc_id], "batch_rank": i + 1})
+
+    return reranked[:limit]
 
 
 def llm_rerank_individual(
@@ -49,7 +96,11 @@ def llm_rerank_individual(
 def rerank(
     query: str, documents: list[dict], method: str = "batch", limit: int = 5
 ) -> list[dict]:
+
+    if method == "batch":
+        return llm_rerank_batch(query, documents, limit)
+
     if method == "individual":
         return llm_rerank_individual(query, documents, limit)
-    else:
-        return documents[:limit]
+
+    return documents[:limit]

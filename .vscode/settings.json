@@ -8,6 +8,7 @@
         "nltk",
         "numpy",
         "rerank",
+        "reranked",
         "scommands",
         "sscommands",
         "stopwords",
