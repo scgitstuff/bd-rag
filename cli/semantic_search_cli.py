@@ -1,5 +1,3 @@
-# pyright: standard
-
 import argparse
 
 from lib.semantic_search import (
@@ -111,8 +109,8 @@ def main() -> None:
             print(f"Query: {result['query']}")
             print("Results:")
             for i, res in enumerate(result["results"], 1):
-                print(f"\n{i}. {res['title']} (score: {res['score']:.4f})") # type: ignore
-                print(f"   {res['document']}...") # type: ignore
+                print(f"\n{i}. {res['title']} (score: {res['score']:.4f})")  # type: ignore
+                print(f"   {res['document']}...")  # type: ignore
         case _:
             parser.print_help()
 

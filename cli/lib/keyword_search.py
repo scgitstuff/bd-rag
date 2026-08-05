@@ -1,5 +1,3 @@
-# pyright: standard
-
 import math
 import os
 import pickle
@@ -13,9 +11,9 @@ from .search_utils import (
     BM25_K1,
     CACHE_DIR,
     DEFAULT_SEARCH_LIMIT,
+    STOPWORDS_PATH,
     Movie,
     SearchResult,
-    STOPWORDS_PATH,
     format_search_result,
     load_movies,
 )

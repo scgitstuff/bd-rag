@@ -1,5 +1,3 @@
-# pyright: standard
-
 import json
 import os
 import re
@@ -17,8 +15,8 @@ from .search_utils import (
     DEFAULT_SEARCH_LIMIT,
     DEFAULT_SEMANTIC_CHUNK_SIZE,
     DOCUMENT_PREVIEW_LENGTH,
-    Movie,
     MOVIE_EMBEDDINGS_PATH,
+    Movie,
     SearchResult,
     format_search_result,
     load_movies,
@@ -35,6 +33,12 @@ class ChunkMetadata(TypedDict):
     movie_idx: int
     chunk_idx: int
     total_chunks: int
+
+
+class ChunkScore(TypedDict):
+    movie_idx: int
+    chunk_idx: int
+    score: float
 
 
 EmbeddingArray = NDArray[Any]
@@ -325,7 +329,7 @@ class ChunkedSemanticSearch(SemanticSearch):
 
         query_embedding = self.generate_embedding(query)
 
-        chunk_scores: list[dict[str, float | int]] = []
+        chunk_scores: list[ChunkScore] = []
         for i, chunk_embedding in enumerate(self.chunk_embeddings):
             similarity = cosine_similarity(query_embedding, chunk_embedding)
             chunk_scores.append(
@@ -341,13 +345,16 @@ class ChunkedSemanticSearch(SemanticSearch):
             movie_idx = chunk_score["movie_idx"]
             if (
                 movie_idx not in movie_scores
-                or chunk_score["score"] > movie_scores[movie_idx]  # type: ignore
+                or chunk_score["score"] > movie_scores[movie_idx]
             ):
-                movie_scores[movie_idx] = chunk_score["score"]  # type: ignore
+                movie_scores[movie_idx] = chunk_score["score"]
 
         sorted_movies = sorted(movie_scores.items(), key=lambda x: x[1], reverse=True)
 
-        assert self.documents is not None
+        if self.documents is None:
+            raise ValueError(
+                "No documents loaded. Call load_or_create_chunk_embeddings first."
+            )
         results: list[SearchResult] = []
         for movie_idx, score in sorted_movies[:limit]:
             if movie_idx is None:
