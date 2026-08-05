@@ -13,5 +13,6 @@
         "sscommands",
         "stopwords",
         "tfidf"
-    ]
+    ],
+    "python.analysis.typeCheckingMode": "standard"
 }
