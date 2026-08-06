@@ -47,6 +47,12 @@ def llm_rerank_individual(
         response = client.chat.completions.create(
             model=model, messages=[{"role": "user", "content": prompt}]
         )
+
+        print(f"RESULTS: {len(response.choices)}")
+        for choice in response.choices:
+            print(f"{choice.message.content}")
+
+
         score_text = (response.choices[0].message.content or "").strip()
         score = int(score_text)
         scored_docs.append({**doc, "individual_score": score})
